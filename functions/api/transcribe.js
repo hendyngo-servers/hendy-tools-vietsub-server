@@ -3,6 +3,7 @@ export async function onRequestPost(context) {
     const { request, env } = context;
     const formData = await request.formData();
     const file = formData.get('media');
+    const targetLang = formData.get('targetLang') || 'vi';
 
     if (!file) {
       return new Response(JSON.stringify({ error: 'Không tìm thấy file tải lên.' }), {
@@ -11,30 +12,50 @@ export async function onRequestPost(context) {
       });
     }
 
-    // Đọc file thành mảng byte (ArrayBuffer) để truyền vào Workers AI
     const arrayBuffer = await file.arrayBuffer();
-    const input = {
+    const inputAudio = {
       audio: [...new Uint8Array(arrayBuffer)]
     };
 
-    // Gọi mô hình Whisper tích hợp sẵn trên Cloudflare Workers AI
-    const response = await env.AI.run('@cf/openai/whisper', input);
-
-    // Xử lý dữ liệu trả về từ Whisper (gồm các chunks/segments)
-    const segments = response.chunks || [{
+    // 1. Nhận diện giọng nói bằng Whisper Model trên Edge
+    const whisperResponse = await env.AI.run('@cf/openai/whisper', inputAudio);
+    const segments = whisperResponse.chunks || [{
       start: 0,
-      end: response.text ? 5 : 0,
-      text: response.text || ""
+      end: whisperResponse.text ? 5 : 0,
+      text: whisperResponse.text || ""
     }];
 
-    // Định dạng lại kết quả cho giao diện Live Editor
-    const formattedSegments = segments.map((seg, index) => ({
-      id: index + 1,
-      start: Number(seg.start.toFixed(2)),
-      end: Number(seg.end.toFixed(2)),
-      text: seg.text.trim(),
-      translated: seg.text.trim() // Có thể tích hợp thêm Workers AI Translation nếu cần dịch đa ngôn ngữ
-    }));
+    // 2. Dịch thuật song song các đoạn văn bản sang ngôn ngữ đích bằng M2M100
+    const translationPromises = segments.map(async (seg, index) => {
+      const originalText = seg.text ? seg.text.trim() : "";
+      let translatedText = originalText;
+
+      if (originalText && targetLang !== 'en') {
+        try {
+          const translationResponse = await env.AI.run('@cf/meta/m2m100-1.2b', {
+            text: originalText,
+            source_lang: 'en',
+            target_lang: targetLang
+          });
+          
+          if (translationResponse && translationResponse.translated_text) {
+            translatedText = translationResponse.translated_text;
+          }
+        } catch (err) {
+          console.error(`Lỗi dịch đoạn ${index}:`, err);
+        }
+      }
+
+      return {
+        id: index + 1,
+        start: Number(seg.start.toFixed(2)),
+        end: Number(seg.end.toFixed(2)),
+        text: originalText,
+        translated: translatedText.trim()
+      };
+    });
+
+    const formattedSegments = await Promise.all(translationPromises);
 
     return new Response(JSON.stringify({ success: true, segments: formattedSegments }), {
       headers: { 'Content-Type': 'application/json' }
