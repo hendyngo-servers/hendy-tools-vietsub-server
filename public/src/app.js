@@ -1,5 +1,6 @@
 const uploadForm = document.getElementById('upload-form');
 const fileInput = document.getElementById('file-input');
+const targetLangSelect = document.getElementById('target-lang');
 const subtitleContainer = document.getElementById('subtitle-editor');
 const downloadSrtBtn = document.getElementById('download-srt');
 const downloadVttBtn = document.getElementById('download-vtt');
@@ -8,7 +9,7 @@ let allSegments = [];
 
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    subtitleContainer.innerHTML = 'Đang gửi file lên Cloudflare AI Edge, vui lòng đợi...';
+    subtitleContainer.innerHTML = 'Đang gửi file lên Cloudflare Edge AI để nhận diện và dịch thuật...';
     allSegments = [];
     downloadSrtBtn.style.display = 'none';
     downloadVttBtn.style.display = 'none';
@@ -18,6 +19,7 @@ uploadForm.addEventListener('submit', async (e) => {
 
     const formData = new FormData();
     formData.append('media', file);
+    formData.append('targetLang', targetLangSelect.value || 'vi');
 
     try {
         const response = await fetch('/api/transcribe', {
@@ -50,11 +52,11 @@ uploadForm.addEventListener('submit', async (e) => {
             downloadSrtBtn.style.display = 'inline-block';
             downloadVttBtn.style.display = 'inline-block';
         } else {
-            subtitleContainer.innerHTML = 'Lỗi từ AI: ' + (data.error || 'Không xác định');
+            subtitleContainer.innerHTML = 'Lỗi xử lý AI: ' + (data.error || 'Không xác định');
         }
     } catch (err) {
         console.error("Lỗi:", err);
-        subtitleContainer.innerHTML = 'Lỗi kết nối đến Cloudflare Workers.';
+        subtitleContainer.innerHTML = 'Lỗi kết nối mạng đến Cloudflare Workers.';
     }
 });
 
