@@ -1,6 +1,6 @@
 {
   "name": "hendy-tools-vietsub",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Tool tự động tạo và dịch phụ đề video bằng Cloudflare Workers AI",
   "scripts": {
     "dev": "wrangler pages dev public",
