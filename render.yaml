@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: hendy-tools-vietsub
+    env: docker
+    plan: standard
+    region: singapore
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 3000
