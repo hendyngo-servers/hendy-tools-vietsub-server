@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hendy Tools Vietsub - Cloudflare Edge AI</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 0 auto; padding: 20px; background: #f4f7f6; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        #subtitle-editor { height: 400px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; background: #fff; border-radius: 4px; }
+        .subtitle-row { display: flex; gap: 10px; margin-bottom: 8px; padding: 5px; border-bottom: 1px solid #eee; align-items: center; }
+        .time { font-size: 0.85em; color: #666; min-width: 130px; }
+        .original, .translated { flex: 1; padding: 4px; border: 1px dashed transparent; }
+        .original:focus, .translated:focus { border-color: #007bff; background: #f9f9f9; outline: none; }
+        .translated { font-weight: bold; color: #0056b3; }
+        button, select, input { padding: 8px 12px; margin-right: 10px; border-radius: 4px; border: 1px solid #ccc; }
+        button.primary { background: #f38020; color: white; border: none; cursor: pointer; } /* Cloudflare Orange */
+        button.primary:hover { background: #d96d15; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Hendy Tools - Tạo Phụ Đề AI (Chạy trên Cloudflare Edge)</h2>
+        <form id="upload-form">
+            <input type="file" id="file-input" accept="audio/*,video/*" required>
+            <button type="submit" class="primary">Tải lên & Nhận diện AI</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h3>Trình chỉnh sửa trực tiếp (Live Editor)</h3>
+        <div id="subtitle-editor">Chưa có dữ liệu. Vui lòng tải lên file để bắt đầu...</div>
+        <div style="margin-top: 15px;">
+            <button id="download-srt" class="primary" style="display:none;">Tải xuống .SRT</button>
+            <button id="download-vtt" class="primary" style="display:none;">Tải xuống .VTT</button>
+        </div>
+    </div>
+
+    <script src="src/subtitles.js"></script>
+    <script src="src/app.js"></script>
+</body>
+</html>
