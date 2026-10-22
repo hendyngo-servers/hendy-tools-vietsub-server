@@ -11,26 +11,32 @@
         .subtitle-row { display: flex; gap: 10px; margin-bottom: 8px; padding: 5px; border-bottom: 1px solid #eee; align-items: center; }
         .time { font-size: 0.85em; color: #666; min-width: 130px; }
         .original, .translated { flex: 1; padding: 4px; border: 1px dashed transparent; }
-        .original:focus, .translated:focus { border-color: #007bff; background: #f9f9f9; outline: none; }
-        .translated { font-weight: bold; color: #0056b3; }
+        .original:focus, .translated:focus { border-color: #f38020; background: #f9f9f9; outline: none; }
+        .translated { font-weight: bold; color: #d96d15; }
         button, select, input { padding: 8px 12px; margin-right: 10px; border-radius: 4px; border: 1px solid #ccc; }
-        button.primary { background: #f38020; color: white; border: none; cursor: pointer; } /* Cloudflare Orange */
+        button.primary { background: #f38020; color: white; border: none; cursor: pointer; }
         button.primary:hover { background: #d96d15; }
     </style>
 </head>
 <body>
 
     <div class="card">
-        <h2>Hendy Tools - Tạo Phụ Đề AI (Chạy trên Cloudflare Edge)</h2>
+        <h2>Hendy Tools - Tạo & Dịch Phụ Đề (Cloudflare Edge AI)</h2>
         <form id="upload-form">
             <input type="file" id="file-input" accept="audio/*,video/*" required>
-            <button type="submit" class="primary">Tải lên & Nhận diện AI</button>
+            <select id="target-lang">
+                <option value="vi" selected>Dịch: Tiếng Việt</option>
+                <option value="ja">Dịch: Tiếng Nhật</option>
+                <option value="zh">Dịch: Tiếng Trung</option>
+                <option value="ko">Dịch: Tiếng Hàn</option>
+            </select>
+            <button type="submit" class="primary">Xử lý AI</button>
         </form>
     </div>
 
     <div class="card">
         <h3>Trình chỉnh sửa trực tiếp (Live Editor)</h3>
-        <div id="subtitle-editor">Chưa có dữ liệu. Vui lòng tải lên file để bắt đầu...</div>
+        <div id="subtitle-editor">Chưa có dữ liệu. Vui lòng tải lên file âm thanh/video để bắt đầu...</div>
         <div style="margin-top: 15px;">
             <button id="download-srt" class="primary" style="display:none;">Tải xuống .SRT</button>
             <button id="download-vtt" class="primary" style="display:none;">Tải xuống .VTT</button>
